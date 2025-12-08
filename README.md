@@ -47,3 +47,21 @@ ESG_VEC_TEST/
 ├── build_faiss_only.py     # 讀取 data/ PDF → 切 chunk → 建立 FAISS 向量索引（寫入 index_out/）
 └── chunks.py               # PDF 解析與 chunk 切分工具
 
+## 2. 環境需求
+
+- **Python 3.10+（建議 3.11）**
+- **Git**、**VS Code**（或任何你喜歡的 IDE）
+- **Ollama**（本地 LLM 服務）
+  - 預設模型：`llama3`
+  - 也可以改成 `qwen2.5:7b` 等其他支援的本地模型
+
+### 2.1 安裝 Ollama（若尚未安裝）
+
+請到官方網站下載並安裝：
+
+- https://ollama.com/
+
+安裝完成後，在終端機中啟動：
+
+```bash
+ollama serve
