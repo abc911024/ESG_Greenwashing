@@ -74,8 +74,8 @@ ollama serve
 pip install -r requirements.txt
 ```
 ### 4. 建立 ESG 向量索引（一次性步驟）
-
-在跑 Agent A 之前，需要先把 `data/` 底下的 ESG 永續報告 PDF：
+(這邊的資料是可以變動的 你想處理的永續報告書都可以丟到data內)
+在跑 Agent A 之前，需要先把 `data/` 底下的 ESG 永續報告 PDF ：
 
 - 解析成文字
 - 切成 chunk
@@ -92,7 +92,7 @@ index_out/
 ├── faiss.index   # FAISS 向量索引檔案
 └── meta.json     # 對應的 Metadata（公司名、年度、頁碼、原文內容 chunk）
 ```
-4. 啟動後端服務
+4. 啟動服務
 在執行服務前，請再次確認以下事項皆已完成：
 [x] 已建立並啟用虛擬環境 (.venv)
 [x] 已安裝所有依賴套件 (requirements.txt)
