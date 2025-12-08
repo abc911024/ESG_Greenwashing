@@ -1,5 +1,5 @@
 # ESG「三角交叉比對」Multi-Agent Demo
-
+![image](https://github.com/abc911024/ESG_Greenwashing/blob/main/%E6%9E%B6%E6%A7%8B%E5%9C%96%20v1.png)
 這是一個用 **本地 LLM + 向量資料庫 + Multi-Agent** 做 ESG 漂綠檢核的小型 Demo。  
 核心概念是：同時比對企業 **自己在永續報告書中的承諾**，以及 **外部新聞中的負面事件**，再由一個總結 Agent 幫使用者做易懂的文字判讀。
 
