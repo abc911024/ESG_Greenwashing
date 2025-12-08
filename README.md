@@ -46,7 +46,7 @@ ESG_VEC_TEST/
 │   └── index.html          # Tailwind + 原生 JS 單頁介面
 ├── build_faiss_only.py     # 讀取 data/ PDF → 切 chunk → 建立 FAISS 向量索引（寫入 index_out/）
 └── chunks.py               # PDF 解析與 chunk 切分工具
-
+```
 ## 2. 環境需求
 
 - **Python 3.10+（建議 3.11）**
