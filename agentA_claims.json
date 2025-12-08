@@ -1,0 +1,25 @@
+Based on the provided text, I will output a JSON array with the required fields. Here is the output:
+```
+[
+  {
+    "company": "中石化",
+    "claim_text": "確認有揮發性有機物洩漏逸散，且測得洩漏之濃度為4,482 ppm 及氯化氫49 ppm 超過...",
+    "topic": "環保",
+    "target_year": 2024,
+    "metric": "罰款",
+    "certainty": null,
+    "source_citations": ["1585"]
+  },
+  {
+    "company": "中石化",
+    "claim_text": "環保局於5 月6 日稽查發現，現場新增1 套廢水處理設施，未登載於所領固定污染源操作許可證內...",
+    "topic": "環保",
+    "target_year": 2024,
+    "metric": "罰款",
+    "certainty": null,
+    "source_citations": ["1623", "1622"]
+  },
+  ...
+]
+```
+Note that I have only included the claims with a specific meta original number in brackets, as per your request. If there are no explicit citations, I have left the `source_citations` field empty (`null`).

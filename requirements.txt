@@ -1,0 +1,14 @@
+# --- Web API / Server ---
+fastapi
+uvicorn[standard]
+# --- 向量檢索 / NLP ---
+faiss-cpu
+sentence-transformers
+# --- LLM / 本地模型 ---
+ollama
+# --- 爬蟲 / RSS 相關 (Agent C 用) ---
+feedparser
+requests
+# --- PDF 萃取 / 前處理 (build_faiss_only.py、chunks.py 用) ---
+pymupdf
+tqdm
