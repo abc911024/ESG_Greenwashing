@@ -1,0 +1,17 @@
+[
+  {
+    "id": "taiwan_cpc",
+    "label": "台灣中油",
+    "value": "台灣中油"
+  },
+  {
+    "id": "tsmc",
+    "label": "台積電",
+    "value": "台積電"
+  },
+  {
+    "id": "fpg",
+    "label": "遠東新",
+    "value": "遠東新"
+  }
+]
