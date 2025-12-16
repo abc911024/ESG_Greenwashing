@@ -99,6 +99,7 @@ def retrieve_all(query: str, topk: int = 50) -> List[Dict[str, Any]]:
                 "meta_id": int(i),  # ✅ 關鍵：保留 meta 原始編號
                 "score": float(s),
                 "company": m.get("company", ""),
+                "company_id": m.get("company_id", None),
                 "year": m.get("year", ""),
                 "page": m.get("page", ""),
                 "chunk": normalize_ws(m.get("chunk", "")),
@@ -205,7 +206,11 @@ def enrich_claims_with_source_chunks(
 
 # ===== 公司名稱比對 + 選擇 =====
 def match_company_name(name: str, preferred: str) -> bool:
-    """判斷公司名稱是否與使用者輸入相符（用包含關係 + 去掉空白）"""
+    """判斷公司名稱是否與使用者輸入相符。
+
+    優先以 normalized equality 為主（避免因為『台灣中油2024』或空白導致不同），若 equality 沒命中，
+    則退回到包含關係做寬鬆比對作為最後手段。
+    """
     def norm(s: str) -> str:
         return re.sub(r"\s+", "", s or "").lower()
 
@@ -213,7 +218,9 @@ def match_company_name(name: str, preferred: str) -> bool:
     n2 = norm(preferred)
     if not n1 or not n2:
         return False
-    # 例如：「台塑」 vs 「台塑2024」
+    # 先嚴格比對（去空白小寫），再寬鬆包含
+    if n1 == n2:
+        return True
     return n2 in n1 or n1 in n2
 
 
@@ -350,12 +357,22 @@ def agent_a_extract_claims(query: str, preferred_company: Optional[str] = None):
 
     # === 2) 如果有指定公司，就先過濾掉別的公司 ===
     if preferred_company:
-        filtered = [
-            r
-            for r in results
-            if match_company_name(r.get("company", ""), preferred_company)
-        ]
-        print(f"[AgentA] 針對 {preferred_company} 過濾後剩 {len(filtered)} 筆")
+        # 先嘗試嚴格 normalized equality（優先）
+        def _norm(s: str) -> str:
+            return re.sub(r"\s+", "", (s or "")).lower()
+
+        filtered_eq = [r for r in results if _norm(r.get("company", "")) == _norm(preferred_company)]
+        if filtered_eq:
+            filtered = filtered_eq
+            print(f"[AgentA] 使用嚴格 normalized 比對針對 {preferred_company} 過濾後剩 {len(filtered)} 筆")
+        else:
+            # fallback 到寬鬆包含比對（舊行為）
+            filtered = [
+                r
+                for r in results
+                if match_company_name(r.get("company", ""), preferred_company)
+            ]
+            print(f"[AgentA] 使用寬鬆比對針對 {preferred_company} 過濾後剩 {len(filtered)} 筆")
 
         # 完全沒有命中 -> 回傳「這家公司，但沒有找到承諾」
         if not filtered:

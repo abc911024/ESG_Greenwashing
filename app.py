@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from pathlib import Path
+import json
 
 from agents.agent_a import agent_a_extract_claims
 from agents.agent_c import agent_c
@@ -71,6 +73,16 @@ def run_all(payload: RunInput):
         "agent_c": c_result,
         "agent_d_text": d_text,
     }
+
+
+@app.get("/companies")
+def get_companies():
+    """回傳後端 canonical companies 清單，供前端選單使用。"""
+    p = Path("data") / "companies.json"
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return []
 
 
 # ---------- 靜態檔案（前端頁面） ----------

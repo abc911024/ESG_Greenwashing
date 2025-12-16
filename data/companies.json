@@ -1,17 +1,22 @@
 [
   {
-    "id": "taiwan_cpc",
-    "label": "台灣中油",
-    "value": "台灣中油"
+    "id": "cpc",
+    "label": "中油",
+    "value": "中油"
   },
   {
-    "id": "tsmc",
-    "label": "台積電",
-    "value": "台積電"
+    "id": "cpchem",
+    "label": "中石化",
+    "value": "中石化"
   },
   {
-    "id": "fpg",
-    "label": "遠東新",
-    "value": "遠東新"
+    "id": "taipower",
+    "label": "台電",
+    "value": "台電"
+  },
+  {
+    "id": "feg",
+    "label": "遠東",
+    "value": "遠東"
   }
 ]

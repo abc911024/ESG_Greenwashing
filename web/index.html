@@ -15,7 +15,7 @@
       </h1>
       <p class="text-sm text-slate-600 mt-1">
         在下方輸入 <span class="font-semibold">公司名稱</span> 與
-        <span class="font-semibold">查詢問題</span>，系統會同時呼叫 Agent A（承諾分析）、
+        <span class="font-semibold">查詢問題</span>，系統會同時呼叫 Agent A（承諾分析）、Agent B(TSJ資料比對)、
         Agent C（外部負面新聞），並由 Agent D 做綜合判讀。
       </p>
     </header>
@@ -32,8 +32,11 @@
               id="input-company"
               type="text"
               placeholder="例如：台灣中油、台塑、遠東新…"
+              list="companies-datalist"
+              autocomplete="off"
               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
+            <datalist id="companies-datalist"></datalist>
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">
@@ -114,10 +117,10 @@
         <!-- Agent C Events -->
         <div class="bg-white rounded-xl shadow p-4">
           <h2 class="text-lg font-semibold text-slate-800">
-            Agent C：外部揭露事件（Negative / ESG-related Events）
+            Agent B：TEJ資料比對
           </h2>
           <p class="text-xs text-slate-500 mt-1">
-            來源：Google News RSS 等外部資料，後續可由 LLM 做事件萃取與分類。
+            來源：TEJ.PRO資料集
           </p>
           <div
             id="agent-c-events-empty"
@@ -211,6 +214,28 @@
         statusText.textContent = message || "";
       }
     }
+
+    // 載入後端 companies（供選單建議使用）
+    async function loadCompanies() {
+      try {
+        const res = await fetch('/companies');
+        if (!res.ok) return;
+        const data = await res.json();
+        const dl = document.getElementById('companies-datalist');
+        dl.innerHTML = '';
+        data.forEach(c => {
+          const opt = document.createElement('option');
+          // 使用 value 作為 canonical（前端選到的就是要回傳的字串）
+          opt.value = c.value || c.label || '';
+          dl.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn('無法載入 companies:', e);
+      }
+    }
+
+    // 頁面載入時填入 companies
+    loadCompanies();
 
     function clearResults() {
       agentACompany.textContent = "";
