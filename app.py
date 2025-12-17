@@ -60,11 +60,13 @@ def run_all(payload: RunInput):
     c_result = agent_c(company)
 
     # 3) Agent D：產出給使用者看的文字說明（不需再遵守 JSON 格式）
-    d_text = agent_d_judge(
+    d_result = agent_d_judge(
         query=f"{company}：{query}".strip("："),
         agent_a=a_result,
         agent_c=c_result,
     )
+    # d_result is a dict: {"text":..., "referenced_meta_ids": [...]}
+    d_text = d_result.get("text") if isinstance(d_result, dict) else d_result
 
     return {
         "company": company,
@@ -72,6 +74,7 @@ def run_all(payload: RunInput):
         "agent_a": a_result,
         "agent_c": c_result,
         "agent_d_text": d_text,
+        "agent_d": d_result,
     }
 
 

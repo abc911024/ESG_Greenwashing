@@ -176,6 +176,8 @@
         >
           尚未查詢，請先在上方輸入公司與問題後送出。
         </div>
+        <!-- Agent D：來源清單 -->
+        <div id="agent-d-sources" class="mt-3 text-xs text-slate-600"></div>
       </div>
     </section>
   </div>
@@ -401,13 +403,117 @@
       }
     }
 
-    // ⬅︎ 新增：Agent D 渲染函式
-    function renderAgentD(text) {
+    // ⬅︎ 新增：Agent D 渲染函式（支援結構化 d + agentA claims 來源顯示）
+    function renderAgentD(d, agentA) {
+      // 支援舊格式（僅文字）或新格式（{ text, referenced_meta_ids }）
+      let text = "";
+      let referenced = [];
+      if (!d) {
+        agentDContent.textContent = "目前沒有足夠資料讓 Agent D 做出明確判讀。";
+        document.getElementById('agent-d-sources').innerHTML = '';
+        return;
+      }
+
+      if (typeof d === 'string') {
+        text = d;
+      } else if (typeof d === 'object' && d !== null) {
+        text = d.text || "";
+        referenced = Array.isArray(d.referenced_meta_ids) ? d.referenced_meta_ids : [];
+      }
+
       if (text && text.trim()) {
         agentDContent.textContent = text;
       } else {
         agentDContent.textContent = "目前沒有足夠資料讓 Agent D 做出明確判讀。";
       }
+
+      // 建立 meta map（由 Agent A 的 claims 裡的 source_chunks 提供）
+      const metaMap = {};
+      try {
+        const claims = (agentA && Array.isArray(agentA.claims)) ? agentA.claims : [];
+        claims.forEach(c => {
+          const scs = c.source_chunks || [];
+          scs.forEach(sc => {
+            if (sc && sc.meta_id != null) {
+              metaMap[sc.meta_id] = sc;
+            }
+          });
+        });
+      } catch (e) {
+        console.warn('build metaMap error', e);
+      }
+
+      // 若 referenced 為空，嘗試從 text 抓 meta_id（格式：meta_id=123）
+      if (referenced.length === 0 && typeof text === 'string') {
+        const re = /meta_id\s*[=:\-]?\s*(\d+)/g;
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          referenced.push(parseInt(m[1], 10));
+        }
+      }
+
+      // Render sources list
+      const container = document.getElementById('agent-d-sources');
+      container.innerHTML = '';
+      if (!referenced || referenced.length === 0) {
+        // 無顯式來源
+        container.textContent = '';
+        return;
+      }
+
+      const title = document.createElement('div');
+      title.className = 'font-semibold mb-2';
+      title.textContent = `相關來源（共 ${referenced.length} 筆）：`;
+      container.appendChild(title);
+
+      referenced.forEach((mid) => {
+        const sc = metaMap[mid];
+        const row = document.createElement('div');
+        row.className = 'mb-2 p-2 bg-white border border-slate-100 rounded';
+
+        const header = document.createElement('div');
+        header.className = 'flex items-center justify-between gap-2';
+        const left = document.createElement('div');
+        left.className = 'text-slate-800 font-mono text-[12px]';
+        left.textContent = `meta_id=${mid}`;
+        header.appendChild(left);
+
+        const right = document.createElement('div');
+        right.className = 'text-[11px] text-slate-500';
+        if (sc) {
+          right.textContent = `${sc.company || ''} | 年度:${sc.year || ''} | p.${sc.page || '?'} ${sc.source_stem ? '| ' + sc.source_stem : ''}`;
+        } else {
+          right.textContent = '（詳細來源未包含於 Agent A 回傳）';
+        }
+        header.appendChild(right);
+        row.appendChild(header);
+
+        if (sc && sc.chunk) {
+          const snippet = document.createElement('div');
+          snippet.className = 'mt-1 text-[13px] text-slate-700';
+          snippet.textContent = sc.chunk;
+          row.appendChild(snippet);
+
+          // toggle full text button
+          const btn = document.createElement('button');
+          btn.className = 'mt-1 text-[11px] text-emerald-600 hover:underline';
+          btn.textContent = '顯示完整片段';
+          let expanded = false;
+          btn.addEventListener('click', () => {
+            expanded = !expanded;
+            if (expanded) {
+              snippet.textContent = (sc.full_chunk || sc.chunk || '');
+              btn.textContent = '隱藏完整片段';
+            } else {
+              snippet.textContent = sc.chunk;
+              btn.textContent = '顯示完整片段';
+            }
+          });
+          row.appendChild(btn);
+        }
+
+        container.appendChild(row);
+      });
     }
 
     form.addEventListener("submit", async (e) => {
@@ -454,7 +560,8 @@
         // }
         renderAgentA(data.agent_a || {});
         renderAgentC(data.agent_c || {});
-        renderAgentD(data.agent_d_text || "");
+        const d_payload = data.agent_d || { text: data.agent_d_text || "" };
+        renderAgentD(d_payload, data.agent_a || {});
 
         setLoading(false, "完成。你可以在下方查看 Agents 的分析結果。");
       } catch (err) {

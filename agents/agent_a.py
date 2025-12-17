@@ -21,7 +21,7 @@ LLM_MODEL = "llama3"  # 若你 Ollama 沒有 llama3，可改 qwen2.5:7b / qwen2.
 # ===== 控制參數 =====
 RETRIEVE_TOPK = 500
 COMPANY_TOPN = 5               # 做候選排序（最後只取 Top1）
-PASSAGES_FOR_SELECTED = 30     # 被選中公司要給 LLM 的片段數
+PASSAGES_FOR_SELECTED = 10     # 被選中公司要給 LLM 的片段數
 CITE_CHUNK_MAXLEN = 160        # 最終輸出 source_chunks 時的節錄長度
 
 
@@ -196,6 +196,9 @@ def enrich_claims_with_source_chunks(
                     "page": p.get("page", ""),
                     "score": p.get("score", None),
                     "chunk": truncate(p.get("chunk", ""), chunk_maxlen),
+                    "full_chunk": p.get("chunk", ""),
+                    "pdf": p.get("pdf", ""),
+                    "source_stem": p.get("source_stem", ""),
                 }
             )
 
