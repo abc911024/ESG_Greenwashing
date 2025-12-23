@@ -66,14 +66,14 @@ ESG_VEC_TEST/
 ```bash
 ollama serve
 ```
-### 3. 安裝相依套件
+## 3. 安裝相依套件
 
 在啟用 venv 的狀態下執行：
 
 ```bash
 pip install -r requirements.txt
 ```
-### 4. 建立 ESG 向量索引（一次性步驟）
+## 4. 建立 ESG 向量索引（一次性步驟）
 (這邊的資料是可以變動的 你想處理的永續報告書都可以丟到data內)
 在跑 Agent A 之前，需要先把 `data/` 底下的 ESG 永續報告 PDF ：
 
