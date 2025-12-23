@@ -93,10 +93,6 @@ index_out/
 └── meta.json     # 對應的 Metadata（公司名、年度、頁碼、原文內容 chunk）
 ```
 4. 啟動服務
-在執行服務前，請再次確認以下事項皆已完成：
-[x] 已建立並啟用虛擬環境 (.venv)
-[x] 已安裝所有依賴套件 (requirements.txt)
-[x] 已成功執行過 build_faiss_only.py 並產出 index_out/
 ```bash
 uvicorn app:app --reload --port 8000
 ```
