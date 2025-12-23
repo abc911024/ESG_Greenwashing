@@ -40,7 +40,7 @@ def build_news_brief(agent_c: Dict[str, Any], limit: int = 30) -> List[Dict[str,
         })
     return out
 
-def agent_d_judge(query: str, agent_a: Dict[str, Any], agent_c: Dict[str, Any]) -> Dict[str, Any]:
+def agent_d_judge(query: str, agent_a: Dict[str, Any], agent_c: Dict[str, Any]) -> str:
     """
     Agent D：不再回傳 JSON，而是「給使用者看的文字敘述」。
     這段文字會直接給前端顯示。
@@ -109,28 +109,4 @@ def agent_d_judge(query: str, agent_a: Dict[str, Any], agent_c: Dict[str, Any]) 
     )
 
     final_text = resp["message"]["content"].strip()
-
-    # attempt to collect meta_ids: union of those in Agent A brief and any explicitly mentioned in text
-    meta_ids = set()
-    for c in claims_brief:
-        for mid in c.get("meta_ids", []) or []:
-            if isinstance(mid, int):
-                meta_ids.add(mid)
-            else:
-                try:
-                    meta_ids.add(int(mid))
-                except Exception:
-                    pass
-
-    # regex for meta_id mentions like meta_id=123 or meta_id 123
-    import re
-    for m in re.findall(r"meta_id\s*[=:\-]?\s*(\d+)", final_text):
-        try:
-            meta_ids.add(int(m))
-        except Exception:
-            pass
-
-    return {
-        "text": final_text,
-        "referenced_meta_ids": sorted(list(meta_ids)),
-    }
+    return final_text

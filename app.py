@@ -60,13 +60,11 @@ def run_all(payload: RunInput):
     c_result = agent_c(company)
 
     # 3) Agent D：產出給使用者看的文字說明（不需再遵守 JSON 格式）
-    d_result = agent_d_judge(
+    d_text = agent_d_judge(
         query=f"{company}：{query}".strip("："),
         agent_a=a_result,
         agent_c=c_result,
     )
-    # d_result is a dict: {"text":..., "referenced_meta_ids": [...]}
-    d_text = d_result.get("text") if isinstance(d_result, dict) else d_result
 
     return {
         "company": company,
@@ -74,7 +72,6 @@ def run_all(payload: RunInput):
         "agent_a": a_result,
         "agent_c": c_result,
         "agent_d_text": d_text,
-        "agent_d": d_result,
     }
 
 
@@ -86,6 +83,48 @@ def get_companies():
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return []
+
+
+@app.get("/meta/{meta_id}")
+def get_meta(meta_id: int):
+    """回傳指定 meta_id 的一筆 meta（index_out/meta.json 以 list 儲存，meta_id 對應 index）。"""
+    p = Path("index_out") / "meta.json"
+    try:
+        arr = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+    if meta_id < 0 or meta_id >= len(arr):
+        return {}
+
+    return arr[meta_id]
+
+
+@app.get("/meta")
+def get_meta_batch(ids: str = ""):
+    """批次取得多筆 meta，透過 query ?ids=1,2,3"""
+    p = Path("index_out") / "meta.json"
+    try:
+        arr = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+    if not ids:
+        return []
+
+    id_list = []
+    for part in ids.split(","):
+        try:
+            id_list.append(int(part))
+        except Exception:
+            continue
+
+    out = []
+    for i in id_list:
+        if 0 <= i < len(arr):
+            out.append(arr[i])
+
+    return out
 
 
 # ---------- 靜態檔案（前端頁面） ----------

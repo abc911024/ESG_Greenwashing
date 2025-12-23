@@ -196,9 +196,6 @@ def enrich_claims_with_source_chunks(
                     "page": p.get("page", ""),
                     "score": p.get("score", None),
                     "chunk": truncate(p.get("chunk", ""), chunk_maxlen),
-                    "full_chunk": p.get("chunk", ""),
-                    "pdf": p.get("pdf", ""),
-                    "source_stem": p.get("source_stem", ""),
                 }
             )
 
