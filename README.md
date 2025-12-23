@@ -92,7 +92,7 @@ index_out/
 ├── faiss.index   # FAISS 向量索引檔案
 └── meta.json     # 對應的 Metadata（公司名、年度、頁碼、原文內容 chunk）
 ```
-4. 啟動服務
+啟動服務
 ```bash
 uvicorn app:app --reload --port 8000
 ```
